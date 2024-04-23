@@ -1,0 +1,120 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+type AddressType {
+  street String
+  city   String
+  state  String
+  zip    String
+}
+
+type RankingType {
+  rankingPodiums Int
+  rankingWins    Int
+}
+
+type RaceSessions {
+  practiceMinutes Int
+  qualyMinutes    Int
+  raceMinutes     Int
+  raceLaps        Int?
+}
+
+model RacerProfile {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  birthDate String
+  whatsapp  String      @unique
+  cpf       String?
+  password  String
+  ranking   RankingType
+
+  tracksUnlockedIds String[]       @db.ObjectId
+  tracksUnlocked    TrackProfile[] @relation(fields: [tracksUnlockedIds], references: [id])
+
+  raceIds String[] @db.ObjectId
+  races   Race[]   @relation(name: "RaceParticipants", fields: [raceIds], references: [id])
+
+  hostedRaceIds String[] @db.ObjectId
+  hostedRaces   Race[]   @relation(name: "RaceHost")
+
+  trackRecords TrackRecords[]
+}
+
+model TrackProfile {
+  id         String         @id @default(auto()) @map("_id") @db.ObjectId
+  email      String         @unique
+  password   String
+  name             String
+  availabilityStart     String
+  availabilityEnd     String
+  raceIntervals Int
+  address          AddressType
+  addressGoogleURL String
+  whatsapp         String
+  website          String
+  trackModes String[]
+
+  racersProfileIds String[]       @db.ObjectId
+  racersProfiles   RacerProfile[] @relation(fields: [racersProfileIds], references: [id])
+
+  categories RaceCategories[]
+  trackRecords TrackRecords[]
+  races        Race[]
+}
+
+model RaceCategories {
+  id         String         @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  price          String
+  equipmentPrice String
+
+  trackProfileId String @db.ObjectId
+  trackProfile TrackProfile @relation(fields: [trackProfileId], references: [id])
+
+  races Race[]
+}
+
+model Race {
+  id         String         @id @default(auto()) @map("_id") @db.ObjectId
+  date       String
+  time       String
+  trackMode  String?
+  sessions   RaceSessions
+  isFinished Boolean
+  isScheduled Boolean
+
+  categoryId String? @db.ObjectId
+  category RaceCategories? @relation(fields: [categoryId], references: [id]) 
+
+  trackId String       @db.ObjectId
+  track   TrackProfile @relation(fields: [trackId], references: [id])
+
+  racerHost        String?       @db.ObjectId
+  racerHostProfile RacerProfile? @relation(name: "RaceHost", fields: [racerHost], references: [id])
+
+  racersProfileIds String[]       @db.ObjectId
+  racersProfiles   RacerProfile[] @relation(name: "RaceParticipants", fields: [racersProfileIds], references: [id])
+}
+
+model TrackRecords {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  time Int
+
+  trackId             String       @db.ObjectId
+  track               TrackProfile @relation(fields: [trackId], references: [id])
+  racerProfile        String       @db.ObjectId
+  racerProfileProfile RacerProfile @relation(fields: [racerProfile], references: [id])
+}
