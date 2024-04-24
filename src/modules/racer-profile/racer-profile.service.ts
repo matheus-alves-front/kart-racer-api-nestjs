@@ -20,6 +20,12 @@ export class RacerProfileService {
     return await this.prismaService.racerProfile.findUnique({
       where: {
         id
+      },
+      include: {
+        hostedRaces: true,
+        races: true,
+        trackRecords: true,
+        tracksUnlocked: true,
       }
     });
   }

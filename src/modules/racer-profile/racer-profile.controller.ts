@@ -54,4 +54,12 @@ export class RacerProfileController {
   ) {
     return this.authLoginService.loginAuthRacer(body)
   }
+
+  @Get(':id/races')
+  @ApiOkResponse({ type: RacerProfileEntity })
+  @UseGuards(GuardProfileTokens)
+  getRacesOfProfile(@Param('id') id: string) {
+    return this.racerProfileService.findOne(id);
+  }
 }
+
