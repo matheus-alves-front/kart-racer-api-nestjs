@@ -3,8 +3,11 @@ import { RacerProfileService } from './racer-profile.service';
 import { Prisma } from '@prisma/client';
 import { GuardProfileTokens } from 'src/guards/guardProfileTokens.guard';
 import { AuthLoginService } from '../prisma/authLogin.service';
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { RacerProfileEntity } from '../prisma/entities/racerProfile.entity';
 
 @Controller('racer-profile')
+@ApiTags('racer')
 export class RacerProfileController {
   constructor(
     private readonly racerProfileService: RacerProfileService,
@@ -12,17 +15,20 @@ export class RacerProfileController {
   ) {}
 
   @Post()
+  @ApiCreatedResponse({ type: RacerProfileEntity })
   create(@Body() createRacerProfileDto: Prisma.RacerProfileCreateInput) {
     return this.racerProfileService.create(createRacerProfileDto);
   }
 
   @Get()
+  @ApiOkResponse({ type: RacerProfileEntity, isArray: true })
   @UseGuards(GuardProfileTokens)
   findAll() {
     return this.racerProfileService.findAll();
   }
 
   @Get(':id')
+  @ApiOkResponse({ type: RacerProfileEntity })
   @UseGuards(GuardProfileTokens)
   findOne(@Param('id') id: string) {
     return this.racerProfileService.findOne(id);
@@ -30,11 +36,13 @@ export class RacerProfileController {
 
   @Patch(':id')
   @UseGuards(GuardProfileTokens)
+  @ApiOkResponse({ type: RacerProfileEntity })
   update(@Param('id') id: string, @Body() updateRacerProfileDto: Prisma.RacerProfileUpdateInput) {
     return this.racerProfileService.update(id, updateRacerProfileDto);
   }
 
   @Delete(':id')
+  @ApiOkResponse({ type: RacerProfileEntity })
   @UseGuards(GuardProfileTokens)
   remove(@Param('id') id: string) {
     return this.racerProfileService.remove(id);
