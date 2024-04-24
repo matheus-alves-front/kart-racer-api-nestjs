@@ -32,6 +32,19 @@ type RaceSessions {
   raceLaps        Int?
 }
 
+model AuthToken {
+  token   String  @id @default(auto()) @map("_id") @db.ObjectId
+  time    Int
+  date    DateTime
+  expired Boolean
+
+  racerProfileId String?       @db.ObjectId
+  racerProfile   RacerProfile? @relation(fields: [racerProfileId], references: [id])
+
+  trackProfileId String?       @db.ObjectId
+  trackProfile   TrackProfile? @relation(fields: [trackProfileId], references: [id])
+}
+
 model RacerProfile {
   id        String      @id @default(auto()) @map("_id") @db.ObjectId
   name      String
@@ -51,53 +64,58 @@ model RacerProfile {
   hostedRaces   Race[]   @relation(name: "RaceHost")
 
   trackRecords TrackRecords[]
+
+  authToken AuthToken[]
 }
 
 model TrackProfile {
-  id         String         @id @default(auto()) @map("_id") @db.ObjectId
-  email      String         @unique
-  password   String
-  name             String
-  availabilityStart     String
-  availabilityEnd     String
-  raceIntervals Int
-  address          AddressType
-  addressGoogleURL String
-  whatsapp         String
-  website          String
-  trackModes String[]
+  id                String      @id @default(auto()) @map("_id") @db.ObjectId
+  email             String      @unique
+  password          String
+  name              String
+  availabilityStart String
+  availabilityEnd   String
+  raceIntervals     Int
+  address           AddressType
+  addressGoogleURL  String
+  whatsapp          String
+  website           String
+  trackModes        String[]
 
   racersProfileIds String[]       @db.ObjectId
   racersProfiles   RacerProfile[] @relation(fields: [racersProfileIds], references: [id])
 
-  categories RaceCategories[]
+  categories   RaceCategories[]
   trackRecords TrackRecords[]
   races        Race[]
+
+  authToken AuthToken[]
 }
 
 model RaceCategories {
-  id         String         @id @default(auto()) @map("_id") @db.ObjectId
+  id             String @id @default(auto()) @map("_id") @db.ObjectId
   name           String
   price          String
   equipmentPrice String
 
-  trackProfileId String @db.ObjectId
-  trackProfile TrackProfile @relation(fields: [trackProfileId], references: [id])
+  trackProfileId String       @db.ObjectId
+  trackProfile   TrackProfile @relation(fields: [trackProfileId], references: [id])
 
   races Race[]
 }
 
 model Race {
-  id         String         @id @default(auto()) @map("_id") @db.ObjectId
-  date       String
-  time       String
-  trackMode  String?
-  sessions   RaceSessions
-  isFinished Boolean
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  date        String
+  time        String
+  trackMode   String?
+  sessions    RaceSessions
+  isFinished  Boolean
   isScheduled Boolean
+  isReserved  Boolean
 
-  categoryId String? @db.ObjectId
-  category RaceCategories? @relation(fields: [categoryId], references: [id]) 
+  categoryId String?         @db.ObjectId
+  category   RaceCategories? @relation(fields: [categoryId], references: [id])
 
   trackId String       @db.ObjectId
   track   TrackProfile @relation(fields: [trackId], references: [id])

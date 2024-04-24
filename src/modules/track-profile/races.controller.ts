@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { RacesService } from './races.service';
 import { Prisma } from '@prisma/client';
 import { RaceSchedule } from 'src/@types/globalTypes';
+import { GuardProfileTokens } from 'src/guards/guardProfileTokens.guard';
 
 
 @Controller('track/:trackId/races')
+@UseGuards(GuardProfileTokens)
 export class RacesController {
   constructor(
     private readonly raceService: RacesService,

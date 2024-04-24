@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { RaceSchedule } from 'src/@types/globalTypes';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 
 interface RaceTime {
   start: string;
@@ -124,7 +124,7 @@ export class RacesService {
       raceLaps
     )
 
-    // Convertendo cada item do schedule para o novo formato
+    // convert the schedule to race schemas
     const races: Prisma.RaceCreateManyInput[] = schedule.map(item => ({
       trackId,
       time: `${item.start} - ${item.end}`,
@@ -137,6 +137,7 @@ export class RacesService {
       },
       isFinished: false,
       isScheduled: false,
+      isReserved: false
     }));
 
     return await this.prismaService.race.createMany({
