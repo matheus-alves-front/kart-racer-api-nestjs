@@ -50,7 +50,7 @@ export class AuthLoginService {
 
   async loginAuthTrack(body: {email: string, password: string}) {
     const { email, password } = body
-    const trackProfile = await this.getProfileByWhatsapp(email);
+    const trackProfile = await this.getTrackByEmail(String(email));
 
     if (!trackProfile) {
       return {
@@ -66,7 +66,8 @@ export class AuthLoginService {
 
     const findAuthToken = await this.prismaService.authToken.findFirst({
       where: {
-        trackProfileId: trackProfile.id
+        trackProfileId: trackProfile.id,
+        expired: false
       },
       select: {
         token: true,

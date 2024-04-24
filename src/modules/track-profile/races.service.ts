@@ -32,14 +32,39 @@ export class RacesService {
     });
   }
 
-  async findAll() {
-    return await this.prismaService.race.findMany();
+  async findAll(trackId: string) {
+    const todayDate = new Date().toLocaleDateString('pt-BR')
+
+    const todayRaces = await this.prismaService.race.findMany({
+      where: {
+        date: todayDate,
+        track: {
+          id: trackId
+        }
+      }
+    })
+
+    return todayRaces
   }
 
   async findOne(id: string) {
     return await this.prismaService.race.findUnique({
       where: {
         id
+      },
+    });
+  }
+
+  async findOneWithAllRelations(id: string) {
+    return await this.prismaService.race.findUnique({
+      where: {
+        id
+      },
+      include: {
+        category: true,
+        racerHostProfile: true,
+        racersProfiles: true,
+        track: true
       }
     });
   }
@@ -147,13 +172,14 @@ export class RacesService {
 
   async generateRaces(trackId: string, raceSchedule: RaceSchedule) {
     const todayDate = new Date().toLocaleDateString('pt-BR')
-    const todayRaces = this.prismaService.race.findMany({
+    const todayRaces = await this.prismaService.race.findMany({
       where: {
-        date: todayDate
+        date: todayDate,
+        trackId
       }
     })
 
-    if (todayRaces) {
+    if (todayRaces.length) {
       return todayRaces
     }
 
@@ -162,5 +188,213 @@ export class RacesService {
       raceSchedule,
       todayDate
     )
+  }
+
+  async racerProfileEnterRace(
+    raceId: string,
+    racerProfileId: string,
+  ) {
+    const findRace = await this.findOne(raceId)
+
+    if (!findRace) return {
+      error: 'Corrida não encontrada'
+    }
+
+    if (!findRace.racersProfileIds.length) {
+      const addRacerAndRacerHost = await this.prismaService.race.update({
+        where: {
+          id: raceId
+        },
+        data: {
+          racerHostProfile: {
+            connect: {
+              id: racerProfileId
+            }
+          },
+          racersProfiles: {
+            connect: {
+              id: racerProfileId
+            }
+          }
+        }
+      })
+
+      return addRacerAndRacerHost
+    }
+
+    if (findRace.racersProfileIds.includes(racerProfileId)) {
+      return {
+        error: 'Este Piloto já está nessa corrida'
+      }
+    }
+    const addRacerProfileToRace = await this.prismaService.race.update({
+      where: {
+        id: raceId
+      },
+      data: {
+        racersProfiles: {
+          connect: {
+            id: racerProfileId
+          }
+        }
+      }
+    })
+
+    return addRacerProfileToRace
+  }
+
+  async racerProfileOutRace(
+    raceId: string,
+    racerProfileId: string,
+  ) {
+    const findRace = await this.findOne(raceId)
+
+    if (!findRace) return {
+      error: 'Corrida não encontrada'
+    }
+
+    if (!findRace.racersProfileIds.includes(racerProfileId)) {
+      return {
+        error: 'Este Piloto não está na corrida'
+      }
+    }
+
+    const removeRacerRelationRace = await this.prismaService.race.update({
+      where: {
+        id: raceId
+      },
+      data: {
+        racersProfiles: {
+          disconnect: {
+            id: racerProfileId
+          }
+        }
+      }
+    })
+
+    if (findRace.racerHost === racerProfileId) {
+      return await this.prismaService.race.update({
+        where: {
+          id: raceId
+        },
+        data: {
+          racersProfiles: {
+            disconnect: {
+              id: racerProfileId
+            }
+          }
+        }
+      })
+    }
+
+    return removeRacerRelationRace
+  }
+
+  async changeRacerHostProfile(
+    oldHost: string,
+    newHost: string,
+    raceId: string
+  ) {
+    const findRace = await this.findOne(raceId)
+
+    if (!findRace) return {
+      error: 'Corrida não encontrada'
+    }
+
+    if (findRace.racerHost !== oldHost) return {
+      error: 'Este não é o atual Host da Corrida'
+    }
+
+    await this.prismaService.race.update({
+      where: {
+        id: raceId
+      },
+      data: {
+        racersProfiles: {
+          disconnect: {
+            id: oldHost
+          },
+          connect: {
+            id: newHost
+          }
+        }
+      }
+    })
+  }
+
+  async addCategoryToRace(
+    raceId: string,
+    categoryId: string,
+    trackId: string
+  ) {
+    const findCategory = await this.prismaService.raceCategories.findUnique({
+      where: {
+        id: categoryId,
+        trackProfileId: trackId
+      }
+    })
+
+    if (!findCategory) return {
+      error: 'Categoria não encontrada'
+    }
+
+    const findRace = await this.findOne(raceId)
+
+    if (!findRace) return {
+      error: 'Corrida não encontrada'
+    }
+
+    const relationCategoryRace = await this.prismaService.race.update({
+      where: {
+        id: raceId
+      },
+      data: {
+        category: {
+          connect: {
+            id: categoryId
+          }
+        }
+      }
+    })
+
+    return relationCategoryRace
+  }
+
+  async changeCategoryToRace(
+    oldCategoryId: string,
+    newCategoryId: string,
+    raceId: string
+  ) {
+    const findCategory = await this.prismaService.raceCategories.findUnique({
+      where: {
+        id: oldCategoryId
+      }
+    })
+
+    if (!findCategory) return {
+      error: 'Categoria não encontrada'
+    }
+
+    const findRace = await this.findOne(raceId)
+
+    if (!findRace) return {
+      error: 'Corrida não encontrada'
+    }
+
+    const relationCategoryRace = await this.prismaService.race.update({
+      where: {
+        id: raceId
+      },
+      data: {
+        category: {
+          disconnect: true,
+          connect: {
+            id: newCategoryId
+          }
+        }
+      }
+    })
+
+    return relationCategoryRace
   }
 }

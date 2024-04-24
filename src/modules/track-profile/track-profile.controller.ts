@@ -5,13 +5,15 @@ import { RaceCategoriesService } from './race-categories.service';
 import { GuardProfileTokens } from 'src/guards/guardProfileTokens.guard';
 import { ApiOkResponse, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { TrackProfileEntity } from '../prisma/entities/trackProfile.entity';
+import { AuthLoginService } from '../prisma/authLogin.service';
 
 @Controller('track-profile')
 @ApiTags('track-profile')
 export class TrackProfileController {
   constructor(
     private readonly trackProfileService: TrackProfileService,
-    private readonly raceCategoriesService: RaceCategoriesService
+    private readonly raceCategoriesService: RaceCategoriesService,
+    private readonly authLoginService: AuthLoginService
   ) {}
 
   @Post()
@@ -82,5 +84,13 @@ export class TrackProfileController {
   @UseGuards(GuardProfileTokens)
   removeCategory(@Param('categoryId') categoryId: string) {
     return this.raceCategoriesService.remove(categoryId);
+  }
+
+  // Login
+  @Post('login')
+  login(
+    @Body() body: { email: string, password: string }
+  ) {
+    return this.authLoginService.loginAuthTrack(body)
   }
 }
