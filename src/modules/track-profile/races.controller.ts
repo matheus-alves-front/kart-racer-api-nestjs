@@ -25,6 +25,11 @@ export class RacesController {
     return await this.raceService.findAll(trackId);
   }
 
+  @Get('detailed')
+  async findAllWithAllInformations(@Param('trackId') trackId: string) {
+    return await this.raceService.findAllWithAllRelations(trackId);
+  }
+
   @Get(':raceId')
   findOne(@Param('raceId') raceId: string) {
     return this.raceService.findOneWithAllRelations(raceId);

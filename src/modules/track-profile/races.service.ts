@@ -41,6 +41,29 @@ export class RacesService {
         track: {
           id: trackId
         }
+      },
+      include: {
+        track: true,
+      }
+    })
+
+    return todayRaces
+  }
+
+  async findAllWithAllRelations(trackId: string) {
+    const todayDate = new Date().toLocaleDateString('pt-BR')
+
+    const todayRaces = await this.prismaService.race.findMany({
+      where: {
+        date: todayDate,
+        track: {
+          id: trackId
+        }
+      },
+      include: {
+        category: true,
+        racerHostProfile: true,
+        racersProfiles: true,
       }
     })
 
