@@ -217,7 +217,7 @@ export class RacesService {
     raceId: string,
     racerProfileId: string,
   ) {
-    const findRace = await this.findOne(raceId)
+    const findRace = await this.findOneWithAllRelations(raceId)
 
     if (!findRace) return {
       error: 'Corrida não encontrada'
@@ -270,7 +270,7 @@ export class RacesService {
     raceId: string,
     racerProfileId: string,
   ) {
-    const findRace = await this.findOne(raceId)
+    const findRace = await this.findOneWithAllRelations(raceId)
 
     if (!findRace) return {
       error: 'Corrida não encontrada'
@@ -318,7 +318,7 @@ export class RacesService {
     newHost: string,
     raceId: string
   ) {
-    const findRace = await this.findOne(raceId)
+    const findRace = await this.findOneWithAllRelations(raceId)
 
     if (!findRace) return {
       error: 'Corrida não encontrada'
@@ -361,7 +361,7 @@ export class RacesService {
       error: 'Categoria não encontrada'
     }
 
-    const findRace = await this.findOne(raceId)
+    const findRace = await this.findOneWithAllRelations(raceId)
 
     if (!findRace) return {
       error: 'Corrida não encontrada'
@@ -398,7 +398,7 @@ export class RacesService {
       error: 'Categoria não encontrada'
     }
 
-    const findRace = await this.findOne(raceId)
+    const findRace = await this.findOneWithAllRelations(raceId)
 
     if (!findRace) return {
       error: 'Corrida não encontrada'
