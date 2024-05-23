@@ -43,7 +43,6 @@ export class RacerProfileController {
 
   @Delete(':id')
   @ApiOkResponse({ type: RacerProfileEntity })
-  @UseGuards(GuardProfileTokens)
   remove(@Param('id') id: string) {
     return this.racerProfileService.remove(id);
   }
