@@ -4,12 +4,14 @@ import { AppService } from './app.service';
 import { RacerProfileModule } from './modules/racer-profile/racer-profile.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { TrackProfileModule } from './modules/track-profile/track-profile.module';
+import { RacerSocialsModule } from './modules/racer-socials/racer-socials.module';
 
 @Module({
   imports: [
     PrismaModule,
     RacerProfileModule,
-    TrackProfileModule
+    TrackProfileModule,
+    RacerSocialsModule
   ],
   controllers: [AppController],
   providers: [AppService],

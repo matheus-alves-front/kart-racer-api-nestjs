@@ -1,26 +1,35 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { RacerChatGateway } from './racer-chat.gateway';
-import { Prisma } from '@prisma/client';
+import { RacerChatService } from './racer-chat.service';
 
 
 @Controller('racer/:racerId/racer-socials')
 export class RacerChatController {
-  constructor(private readonly chatGateway: RacerChatGateway) {}
+  constructor(
+    private readonly chatGateway: RacerChatGateway,
+    private readonly chatService: RacerChatService,
+  ) {}
 
-  @Post('chat/:racerFriendId')
+  @Post('chat/:friendShipId')
   addFriend(
-    @Param('racerFriendId') racerFriendId: string,
+    @Param('friendShipId') friendShipId: string,
     @Param('racerId') racerId: string,
-    @Body() body: Prisma.ChatCreateInput
+    @Body() body: { message: string }
   ) {
-    return this.chatGateway.onSendMessage(body, racerId, racerFriendId);
+    return this.chatGateway.onSendMessage(body, racerId, friendShipId);
   }
 
-  @Get(':friend')
+  @Get('chat/:friendShipId')
   getChatFromFriendship(
-    @Param('racerId') racerId: string,
-    @Param('racerFriendId') racerFriendId: string,
+    @Param('friendShipId') friendShipId: string,
   ) {
-    return this.chatGateway.onGetMessagesFromChat(racerId, racerFriendId)
+    return this.chatService.getConnectChat(friendShipId)
+  }
+
+  @Get('chat/:friendShipId/more')
+  loadMoreChat(
+    @Param('friendShipId') friendShipId: string,
+  ) {
+    return this.chatService.loadMoreChat(friendShipId)
   }
 }

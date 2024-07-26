@@ -24,17 +24,8 @@ export class RacerChatGateway implements OnModuleInit {
     })
   }
 
-  async onGetMessagesFromChat(
-    racerId: string,
-    racerFriendId: string
-  ) {
-    const chat = await this.chatService.getConnectChat(racerId, racerFriendId)
-
-    return chat
-  }
-
   async onSendMessage(
-    @MessageBody() body: Prisma.ChatCreateInput,
+    @MessageBody() body: { message: string },
     senderId: string,
     friendShipId: string
   ) {

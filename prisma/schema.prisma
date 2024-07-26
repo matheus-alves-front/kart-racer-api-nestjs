@@ -76,8 +76,7 @@ model Chat {
   senderId String
   message String
 
-  createdAt DateTime
-  updatedAt DateTime
+  createdAt DateTime @updatedAt
 
   chatWithFriendshipId String @db.ObjectId
   chatWithFriendship SocialFriendship @relation(fields: [chatWithFriendshipId], references: [id])

@@ -9,44 +9,40 @@ export class RacerChatService {
   ) {}
 
   async getConnectChat(
-    racerId: string,
-    racerFriendId: string
+    friendshipId: string
   ) {
-    const getFriendShip = await this.prismaService.socialFriendship.findFirst({
+    const getChat = await this.prismaService.chat.findMany({
       where: {
-        racerId,
-        racerFriendId
+        chatWithFriendshipId: friendshipId
       }, 
-      include: {
-        chat: {
-          take: 30
-        }
-      }
+      take: 30
     })
-    return getFriendShip.chat;
+    return getChat;
+  }
+
+  async loadMoreChat(
+    friendshipId: string
+  ) {
+    const getMoreChat = await this.prismaService.chat.findMany({
+      where: {
+        chatWithFriendshipId: friendshipId
+      }, 
+      skip: 30
+    })
+    return getMoreChat;
   }
 
 
   async createSendMessage(
     senderId: string,
     friendshipId: string,
-    body: Prisma.ChatCreateInput
+    body: { message: string }
   ) {
-    const getFriendShip = await this.prismaService.socialFriendship.findUnique({
-      where: {
-        id: friendshipId
-      }
-    })
-
     const createNewChatMessage = await this.prismaService.chat.create({
       data: {
         ...body,
         senderId,
-        chatWithFriendship: {
-          connect: {
-            id: getFriendShip.racerFriendId
-          }
-        }
+        chatWithFriendshipId: friendshipId
       }
     })
     return createNewChatMessage;
