@@ -19,24 +19,26 @@ export class RacerChatGateway implements OnModuleInit {
   @WebSocketServer()
   server: Server
 
-  private messages: Prisma.SocialFriendshipCreateInput[] = [];
-
   onModuleInit() {
     this.server.on('connection', async (socket) => {
-      this.server.emit('allMessages', this.messages)
-      const namespace = socket.nsp
-      console.log(namespace)
     })
   }
 
-  @SubscribeMessage('sendMessage')
-  async onTableUpdate(
-    @MessageBody() body: Prisma.SocialFriendshipCreateInput,
-    senderId: string,
-    receiverId: string 
+  async onGetMessagesFromChat(
+    racerId: string,
+    racerFriendId: string
   ) {
-    this.server.emit('messageListener', body, senderId, receiverId)
-    // this.messages.push(body)
-    // this.server.emit('allMessages', this.messages)
+    const chat = await this.chatService.getConnectChat(racerId, racerFriendId)
+
+    return chat
+  }
+
+  async onSendMessage(
+    @MessageBody() body: Prisma.ChatCreateInput,
+    senderId: string,
+    friendShipId: string
+  ) {
+    const sendMessage = await this.chatService.createSendMessage(senderId, friendShipId, body)
+    this.server.emit(`chat/friendship/${friendShipId}`, sendMessage)
   }
 }

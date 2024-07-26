@@ -50,5 +50,4 @@ export class RacerSocialsController {
   ) {
     return this.racerSocialsService.deleteFriendship(racerId, racerFriendId);
   }
-
 }
