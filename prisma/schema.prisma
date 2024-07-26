@@ -63,9 +63,36 @@ model RacerProfile {
   hostedRaceIds String[] @db.ObjectId
   hostedRaces   Race[]   @relation(name: "RaceHost")
 
-  trackRecords TrackRecords[]
+  trackRecords TrackRecords[] // todo
 
   authToken AuthToken[]
+
+  friends SocialFriendship[]
+}
+
+model Chat {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  
+  senderId String
+  message String
+
+  createdAt DateTime
+  updatedAt DateTime
+
+  chatWithFriendshipId String @db.ObjectId
+  chatWithFriendship SocialFriendship @relation(fields: [chatWithFriendshipId], references: [id])
+}
+
+model SocialFriendship {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  
+  chat        Chat[]
+  accepted    Boolean
+
+  racerFriendId String @db.ObjectId
+  racerFriend RacerProfile @relation(fields: [racerFriendId], references: [id])
+
+  racerId String @db.ObjectId
 }
 
 model TrackProfile {

@@ -104,12 +104,12 @@ export class AuthLoginService {
       ? await this.createAuthToken('racer',getToken.racerProfileId) 
       : await this.createAuthToken('track',getToken.trackProfileId)
       
-      if (createToken) return true
+      if (createToken) return createToken
 
-      return false
+      return null
     }
 
-    return true
+    return getToken
   }
 
   async setTokenExpiredPrisma(token: string) {
