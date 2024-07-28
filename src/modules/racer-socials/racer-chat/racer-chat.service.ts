@@ -38,7 +38,7 @@ export class RacerChatService {
     friendshipId: string,
     body: { message: string }
   ) {
-    const createNewChatMessage = await this.prismaService.chat.create({
+    const createNewChatMessage = await this.prismaService.chat.createMany({
       data: {
         ...body,
         senderId,

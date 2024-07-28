@@ -13,6 +13,23 @@ export class RacerSocialsService {
     racerId: string,
     racerFriendId: string
   ) {
+    const thisFriendshipExists = await this.prismaService.socialFriendship.findFirst({
+      where: {
+        OR: [
+          {
+            racerFriendId: racerFriendId,
+            racerId: racerId
+          },
+          {
+            racerFriendId: racerId,
+            racerId: racerFriendId
+          }
+        ]
+      }
+    })
+
+    if (thisFriendshipExists) return thisFriendshipExists
+
     const createSocialFriendship = await this.prismaService.socialFriendship.create({
       data: {
         accepted: false,
@@ -20,6 +37,7 @@ export class RacerSocialsService {
         racerId
       }
     })
+    
     return createSocialFriendship;
   }
 
@@ -27,15 +45,25 @@ export class RacerSocialsService {
     racerId: string,
     racerFriendId: string
   ) {
-    return await this.prismaService.socialFriendship.updateMany({
+    const updateFriendship = await this.prismaService.socialFriendship.updateMany({
       where: {
-        racerId,
-        racerFriendId
+        OR: [
+          {
+            racerId: racerId,
+            racerFriendId: racerFriendId
+          },
+          {
+            racerId: racerFriendId,
+            racerFriendId: racerId
+          }
+        ]
       }, 
       data: {
         accepted: true
       }
     });
+
+    return updateFriendship
   }
 
   async deleteFriendship(
@@ -44,17 +72,31 @@ export class RacerSocialsService {
   ) {
     return await this.prismaService.socialFriendship.deleteMany({
       where: {
-        racerId,
-        racerFriendId
+        OR: [
+          {
+            racerId: racerId,
+            racerFriendId: racerFriendId
+          },
+          {
+            racerId: racerFriendId,
+            racerFriendId: racerId
+          }
+        ]
       }
     })
   }
 
   async getAllFriends(racerId: string) {
-    return await this.prismaService.socialFriendship.findMany({
+    const friendships = await this.prismaService.socialFriendship.findMany({
       where: {
-        racerId,
-        accepted: true
+        OR: [
+          {
+            racerId: racerId,
+          },
+          {
+            racerFriendId: racerId
+          }
+        ]
       },
       include: {
         racerFriend: true,
@@ -63,17 +105,57 @@ export class RacerSocialsService {
         }
       }
     });
+
+    const [friendshipWithProfiles] = await Promise.all(friendships.map(async (friendship) => {
+      const { 
+        racerId: actualRacerId,
+      } = friendship
+
+      const racerMissing = await this.prismaService.racerProfile.findUnique({
+        where: {
+          id: actualRacerId
+        }
+      })
+      return {
+        ...friendship,
+        racer: racerMissing
+      }
+    })) 
+
+    return friendshipWithProfiles ?? []
   }
 
   async getAllFriendRequests(racerId: string) {
-    return await this.prismaService.socialFriendship.findMany({
+    const friendRequests = await this.prismaService.socialFriendship.findMany({
       where: {
-        racerId,
+        OR: [
+          {
+            racerFriendId: racerId
+          }
+        ],
         accepted: false
       },
       include: {
         racerFriend: true,
       }
     });
+
+    const [friendshipRequestsWithProfiles] = await Promise.all(friendRequests.map(async (friendship) => {
+      const { 
+        racerId: actualRacerId,
+      } = friendship
+
+      const racerMissing = await this.prismaService.racerProfile.findUnique({
+        where: {
+          id: actualRacerId
+        }
+      })
+      return {
+        ...friendship,
+        racer: racerMissing
+      }
+    })) 
+
+    return friendshipRequestsWithProfiles ?? []
   }
 }
