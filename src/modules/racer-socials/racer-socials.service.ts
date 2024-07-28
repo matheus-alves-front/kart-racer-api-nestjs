@@ -86,6 +86,7 @@ export class RacerSocialsService {
     })
   }
 
+
   async getAllFriends(racerId: string) {
     const friendships = await this.prismaService.socialFriendship.findMany({
       where: {
@@ -106,24 +107,28 @@ export class RacerSocialsService {
       }
     });
 
-    const [friendshipWithProfiles] = await Promise.all(friendships.map(async (friendship) => {
-      const { 
-        racerId: actualRacerId,
-      } = friendship
+    const friendshipsWithProfiles = await Promise.all(
+      friendships.map(async (friendship) => {
+        const { 
+          racerId: actualRacerId,
+        } = friendship
 
-      const racerMissing = await this.prismaService.racerProfile.findUnique({
-        where: {
-          id: actualRacerId
+        const racerProfile = await this.prismaService.racerProfile.findUnique({
+          where: {
+            id: actualRacerId
+          }
+        });
+
+        return {
+          ...friendship,
+          racer: racerProfile
         }
       })
-      return {
-        ...friendship,
-        racer: racerMissing
-      }
-    })) 
+    ); 
 
-    return friendshipWithProfiles ?? []
-  }
+    return friendshipsWithProfiles;
+  } 
+
 
   async getAllFriendRequests(racerId: string) {
     const friendRequests = await this.prismaService.socialFriendship.findMany({
@@ -140,22 +145,25 @@ export class RacerSocialsService {
       }
     });
 
-    const [friendshipRequestsWithProfiles] = await Promise.all(friendRequests.map(async (friendship) => {
-      const { 
-        racerId: actualRacerId,
-      } = friendship
+    const friendRequestsWithProfiles = await Promise.all(
+      friendRequests.map(async (friendship) => {
+        const { 
+          racerId: actualRacerId,
+        } = friendship
 
-      const racerMissing = await this.prismaService.racerProfile.findUnique({
-        where: {
-          id: actualRacerId
+        const racerProfile = await this.prismaService.racerProfile.findUnique({
+          where: {
+            id: actualRacerId
+          }
+        });
+
+        return {
+          ...friendship,
+          racer: racerProfile
         }
       })
-      return {
-        ...friendship,
-        racer: racerMissing
-      }
-    })) 
+    ); 
 
-    return friendshipRequestsWithProfiles ?? []
+    return friendRequestsWithProfiles ?? []
   }
 }
