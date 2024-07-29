@@ -1,8 +1,6 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { RacerChatGateway } from './racer-chat.gateway';
 import { RacerChatService } from './racer-chat.service';
-
-
 @Controller('racer/:racerId/racer-socials')
 export class RacerChatController {
   constructor(
@@ -11,7 +9,7 @@ export class RacerChatController {
   ) {}
 
   @Post('chat/:friendShipId')
-  addFriend(
+  sendMessageByFriendshipId(
     @Param('friendShipId') friendShipId: string,
     @Param('racerId') racerId: string,
     @Body() body: { message: string }

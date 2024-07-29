@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Prisma } from '@prisma/client';
-
 @Injectable()
 export class RacerChatService {
   constructor (
@@ -11,13 +9,27 @@ export class RacerChatService {
   async getConnectChat(
     friendshipId: string
   ) {
-    const getChat = await this.prismaService.chat.findMany({
+    const getFriendshipWithChat = await this.prismaService.socialFriendship.findUnique({
       where: {
-        chatWithFriendshipId: friendshipId
+        id: friendshipId
       }, 
-      take: 30
+      include: {
+        chat: {
+          take: 30
+        },
+        racerFriend: true
+      }
     })
-    return getChat;
+
+    const getUserFromUserId = await this.prismaService.racerProfile.findUnique({
+      where: {
+        id: getFriendshipWithChat.racerId
+      }
+    })
+    return {
+      ...getFriendshipWithChat,
+      racer: getUserFromUserId
+    };
   }
 
   async loadMoreChat(
@@ -38,7 +50,7 @@ export class RacerChatService {
     friendshipId: string,
     body: { message: string }
   ) {
-    const createNewChatMessage = await this.prismaService.chat.createMany({
+    const createNewChatMessage = await this.prismaService.chat.create({
       data: {
         ...body,
         senderId,

@@ -20,7 +20,7 @@ export class RacerChatGateway implements OnModuleInit {
   server: Server
 
   onModuleInit() {
-    this.server.on('connection', async (socket) => {
+    this.server.on('connect', async (socket) => {
     })
   }
 
@@ -30,6 +30,6 @@ export class RacerChatGateway implements OnModuleInit {
     friendShipId: string
   ) {
     const sendMessage = await this.chatService.createSendMessage(senderId, friendShipId, body)
-    this.server.emit(`chat/friendship/${friendShipId}`, sendMessage)
+    this.server.emit(`racer-chat/friendship/${friendShipId}`, sendMessage)
   }
 }
