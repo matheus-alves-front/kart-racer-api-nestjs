@@ -23,6 +23,7 @@ type AddressType {
 type RankingType {
   rankingPodiums Int
   rankingWins    Int
+  totalRaces     Int
 }
 
 type RaceSessions {
@@ -63,8 +64,8 @@ model RacerProfile {
   hostedRaceIds String[] @db.ObjectId
   hostedRaces   Race[]   @relation(name: "RaceHost")
 
-  trackRecords TrackRecords[] // todo
-
+  bestLaps TrackBestLap[]
+  trackRecords TrackRecord[]
   authToken AuthToken[]
 
   friends SocialFriendship[]
@@ -112,7 +113,7 @@ model TrackProfile {
   racersProfiles   RacerProfile[] @relation(fields: [racersProfileIds], references: [id])
 
   categories   RaceCategories[]
-  trackRecords TrackRecords[]
+  bestLaps TrackBestLap[]
   races        Race[]
 
   authToken AuthToken[]
@@ -128,6 +129,7 @@ model RaceCategories {
   trackProfile   TrackProfile @relation(fields: [trackProfileId], references: [id])
 
   races Race[]
+  trackRecords TrackRecord[]
 }
 
 model Race {
@@ -151,14 +153,49 @@ model Race {
 
   racersProfileIds String[]       @db.ObjectId
   racersProfiles   RacerProfile[] @relation(name: "RaceParticipants", fields: [racersProfileIds], references: [id])
+
+  raceResult RaceResult? @relation("raceResult")
 }
 
-model TrackRecords {
-  id   String @id @default(auto()) @map("_id") @db.ObjectId
-  time Int
+model RaceResult {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
 
-  trackId             String       @db.ObjectId
-  track               TrackProfile @relation(fields: [trackId], references: [id])
-  racerProfile        String       @db.ObjectId
-  racerProfileProfile RacerProfile @relation(fields: [racerProfile], references: [id])
+  raceId        String       @unique @db.ObjectId
+  race          Race        @relation(name: "raceResult", fields: [raceId], references: [id])
+
+  trackRecords   TrackRecord[]
+}
+
+model TrackRecord {
+  id                String       @id @default(auto()) @map("_id") @db.ObjectId
+
+  racePosition      Int
+  totalTime         String
+  bestLapTime       String
+  leaderDifference  String
+
+  racerProfileId      String       @db.ObjectId
+  racerProfile RacerProfile @relation(fields: [racerProfileId], references: [id])
+
+  raceCategoryId    String       @db.ObjectId
+  raceCategory      RaceCategories @relation(fields: [raceCategoryId], references: [id]) 
+
+  raceResult        RaceResult?  @relation(fields: [raceResultId], references: [id])
+  raceResultId      String?      @unique @db.ObjectId
+
+  TrackBestLap TrackBestLap?
+}
+
+model TrackBestLap {
+  id                String       @id @default(auto()) @map("_id") @db.ObjectId
+  trackMode         String
+
+  trackId           String       @db.ObjectId
+  track             TrackProfile @relation(fields: [trackId], references: [id])
+
+  trackRecord TrackRecord? @relation(fields: [trackRecordId], references: [id])
+  trackRecordId String? @unique @db.ObjectId 
+
+  racerProfileId      String       @db.ObjectId
+  racerProfile RacerProfile @relation(fields: [racerProfileId], references: [id])
 }

@@ -30,19 +30,17 @@ export class AuthLoginService {
       select: {
         token: true,
         date: true,
-        expired: true,
         time: true,
-        racerProfile: true
       }
     });
 
     if (!findAuthToken) {
-      return this.createAuthToken('racer',racerProfile.id);
-    } 
+      return await this.createAuthToken('racer',racerProfile.id);
+    }
 
     if (this.isTokenExpired(findAuthToken.date)) {
       await this.setTokenExpiredPrisma(findAuthToken.token)
-      return this.createAuthToken('racer',racerProfile.id);
+      return await this.createAuthToken('racer',racerProfile.id);
     }
 
     return findAuthToken;
@@ -79,12 +77,12 @@ export class AuthLoginService {
     });
 
     if (!findAuthToken) {
-      return this.createAuthToken('track',trackProfile.id);
+      return await this.createAuthToken('track',trackProfile.id);
     } 
 
     if (this.isTokenExpired(findAuthToken.date)) {
       await this.setTokenExpiredPrisma(findAuthToken.token)
-      return this.createAuthToken('track',trackProfile.id);
+      return await this.createAuthToken('track',trackProfile.id);
     }
 
     return findAuthToken;

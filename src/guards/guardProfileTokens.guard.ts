@@ -28,3 +28,5 @@ export class GuardProfileTokens implements CanActivate {
     return this.validateToken(headers);
   }
 }
+
+// akmal@wizdaa.com

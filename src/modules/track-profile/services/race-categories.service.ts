@@ -22,11 +22,12 @@ export class RaceCategoriesService {
     });
   }
 
-  async findAll(trackId: string) {
+  async findAll(trackId: string, query?: Prisma.RaceCategoriesFindManyArgs) {
     return await this.prismaService.raceCategories.findMany({
+      ...query,
       where: {
-        trackProfileId: trackId
-      }
+        trackProfileId: trackId,
+      },
     });
   }
 

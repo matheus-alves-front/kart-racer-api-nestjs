@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
-import { RacerChatGateway } from './racer-chat.gateway';
-import { RacerChatService } from './racer-chat.service';
+import { RacerChatGateway } from '../gateways/racer-chat.gateway';
+import { RacerChatService } from '../services/racer-chat.service';
+
 @Controller('racer/:racerId/racer-socials')
 export class RacerChatController {
   constructor(

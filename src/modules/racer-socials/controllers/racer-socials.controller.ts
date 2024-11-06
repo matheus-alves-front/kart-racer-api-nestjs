@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { RacerSocialsService } from './racer-socials.service';
+import { RacerSocialsService } from '../services/racer-socials.service';
 
 @Controller('racer/:racerId/racer-socials')
 export class RacerSocialsController {

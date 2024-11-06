@@ -1,4 +1,4 @@
-import { AuthToken, Race, RacerProfile, RankingType, TrackProfile, TrackRecords } from '@prisma/client';
+import { AuthToken, Race, RacerProfile, RankingType, TrackProfile, TrackRecord } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class RacerProfileEntity implements RacerProfile {
@@ -42,9 +42,8 @@ export class RacerProfileEntity implements RacerProfile {
   hostedRaces: Race[];
 
   @ApiProperty({isArray: true})
-  trackRecords: TrackRecords[];
+  trackRecords: TrackRecord[];
 
   @ApiProperty({isArray: true})
   authToken: AuthToken[];
 }
-

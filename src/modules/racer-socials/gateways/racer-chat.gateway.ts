@@ -2,7 +2,7 @@ import { Injectable, OnModuleInit } from "@nestjs/common";
 import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Prisma } from "@prisma/client";
 import { Server } from 'socket.io'
-import { RacerChatService } from "./racer-chat.service";
+import { RacerChatService } from "../services/racer-chat.service";
 
 @WebSocketGateway({
   cors: {

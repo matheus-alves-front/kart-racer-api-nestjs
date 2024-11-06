@@ -1,11 +1,11 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
-import { TrackProfileService } from './track-profile.service';
 import { Prisma } from '@prisma/client';
-import { RaceCategoriesService } from './race-categories.service';
 import { GuardProfileTokens } from 'src/guards/guardProfileTokens.guard';
 import { ApiOkResponse, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
-import { TrackProfileEntity } from '../prisma/entities/trackProfile.entity';
-import { AuthLoginService } from '../prisma/authLogin.service';
+import { TrackProfileService } from '../services/track-profile.service';
+import { RaceCategoriesService } from '../services/race-categories.service';
+import { AuthLoginService } from 'src/modules/prisma/authLogin.service';
+import { TrackProfileEntity } from 'src/modules/prisma/entities/trackProfile.entity';
 
 @Controller('track-profile')
 @ApiTags('track-profile')
@@ -18,79 +18,79 @@ export class TrackProfileController {
 
   @Post()
   @ApiCreatedResponse({ type: TrackProfileEntity })
-  create(@Body() createTrackProfileDto: Prisma.TrackProfileCreateInput) {
-    return this.trackProfileService.create(createTrackProfileDto);
+  async create(@Body() createTrackProfileDto: Prisma.TrackProfileCreateInput) {
+    return await this.trackProfileService.create(createTrackProfileDto);
   }
 
   @Get()
   @ApiOkResponse({ type: TrackProfileEntity, isArray: true })
   @UseGuards(GuardProfileTokens)
-  findAll() {
-    return this.trackProfileService.findAll();
+  async findAll() {
+    return await this.trackProfileService.findAll();
   }
 
   @Get(':trackId')
   @ApiOkResponse({ type: TrackProfileEntity })
   @UseGuards(GuardProfileTokens)
-  findOne(@Param('trackId') trackId: string) {
-    return this.trackProfileService.findOne(trackId);
+  async findOne(@Param('trackId') trackId: string) {
+    return await this.trackProfileService.findOne(trackId);
   }
 
   @Patch(':trackId')
   @ApiOkResponse({ type: TrackProfileEntity })
   @UseGuards(GuardProfileTokens)
-  update(@Param('trackId') trackId: string, @Body() updateTrackProfileDto: Prisma.TrackProfileUpdateInput) {
-    return this.trackProfileService.update(trackId, updateTrackProfileDto);
+  async update(@Param('trackId') trackId: string, @Body() updateTrackProfileDto: Prisma.TrackProfileUpdateInput) {
+    return await this.trackProfileService.update(trackId, updateTrackProfileDto);
   }
 
   @Delete(':trackId')
   @ApiOkResponse({ type: TrackProfileEntity })
   @UseGuards(GuardProfileTokens)
-  remove(@Param('trackId') trackId: string) {
-    return this.trackProfileService.remove(trackId);
+  async remove(@Param('trackId') trackId: string) {
+    return await this.trackProfileService.remove(trackId);
   }
 
   // Categories
   @Post(':trackId/categories')
   @UseGuards(GuardProfileTokens)
-  createCategory(
+  async createCategory(
     @Body() createTrackProfileDto: Prisma.RaceCategoriesCreateInput,
     @Param('trackId') id: string
   ) {
-    return this.raceCategoriesService.create(id, createTrackProfileDto);
+    return await this.raceCategoriesService.create(id, createTrackProfileDto);
   }
 
   @Get(':trackId/categories')
   @UseGuards(GuardProfileTokens)
-  findAllCategories(
+  async findAllCategories(
     @Param('trackId') trackId: string
   ) {
-    return this.raceCategoriesService.findAll(trackId);
+    return await this.raceCategoriesService.findAll(trackId);
   }
 
   @Get(':trackId/categories/:categoryId')
   @UseGuards(GuardProfileTokens)
-  findOneCategory(@Param('categoryId') categoryId: string) {
-    return this.raceCategoriesService.findOne(categoryId);
+  async findOneCategory(@Param('categoryId') categoryId: string) {
+    return await this.raceCategoriesService.findOne(categoryId);
   }
 
   @Patch(':trackId/categories/:categoryId')
   @UseGuards(GuardProfileTokens)
-  updateCategory(@Param('categoryId') categoryId: string, @Body() updateTrackProfileDto: Prisma.RaceCategoriesUpdateInput) {
-    return this.raceCategoriesService.update(categoryId, updateTrackProfileDto);
+  async updateCategory(@Param('categoryId') categoryId: string, @Body() updateTrackProfileDto: Prisma.RaceCategoriesUpdateInput) {
+    return await this.raceCategoriesService.update(categoryId, updateTrackProfileDto);
   }
 
   @Delete(':trackId/categories/:categoryId')
   @UseGuards(GuardProfileTokens)
-  removeCategory(@Param('categoryId') categoryId: string) {
-    return this.raceCategoriesService.remove(categoryId);
+  async removeCategory(@Param('categoryId') categoryId: string) {
+    return await this.raceCategoriesService.remove(categoryId);
   }
 
   // Login
   @Post('login')
-  login(
+  async login(
     @Body() body: { email: string, password: string }
   ) {
-    return this.authLoginService.loginAuthTrack(body)
+    return await this.authLoginService.loginAuthTrack(body)
   }
 }

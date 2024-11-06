@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
+import { RacerProfileQueryParams } from './dtos/racerProfile.dto';
 
 @Injectable()
 export class RacerProfileService {
@@ -12,8 +13,15 @@ export class RacerProfileService {
     });
   }
 
-  async findAll() {
-    return await this.prismaService.racerProfile.findMany();
+  async findAll(query?: RacerProfileQueryParams) {
+    return await this.prismaService.racerProfile.findMany({
+      where: {
+        ...query,
+        name: {
+          contains: query.name
+        }
+      }
+    });
   }
 
   async findOne(id: string) {

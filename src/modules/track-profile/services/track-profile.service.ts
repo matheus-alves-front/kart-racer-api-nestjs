@@ -16,7 +16,7 @@ export class TrackProfileService {
     return await this.prismaService.trackProfile.findMany({
       include: {
         categories: true,
-        trackRecords: true,
+        bestLaps: true,
       }
     });
   }
@@ -28,7 +28,7 @@ export class TrackProfileService {
       },
       include: {
         categories: true,
-        trackRecords: true,
+        bestLaps: true,
         racersProfiles: true
       }
     });

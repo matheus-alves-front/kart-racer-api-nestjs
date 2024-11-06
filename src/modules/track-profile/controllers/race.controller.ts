@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
-import { RacesService } from './races.service';
+import { RacesService } from '../services/races.service';
 import { GuardProfileTokens } from 'src/guards/guardProfileTokens.guard';
 
 

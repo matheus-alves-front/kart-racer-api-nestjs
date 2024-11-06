@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
-import { TrackProfileService } from './track-profile.service';
-import { TrackProfileController } from './track-profile.controller';
-import { RaceCategoriesService } from './race-categories.service';
-import { RacesService } from './races.service';
-import { RacesController } from './races.controller';
-import { RaceController } from './race.controller';
-
+import { TrackProfileService } from './services/track-profile.service';
+import { RaceCategoriesService } from './services/race-categories.service';
+import { RacesService } from './services/races.service';
+import { TrackProfileController } from './controllers/track-profile.controller';
+import { RacesController } from './controllers/races.controller';
+import { RaceController } from './controllers/race.controller';
 @Module({
   controllers: [
     TrackProfileController,

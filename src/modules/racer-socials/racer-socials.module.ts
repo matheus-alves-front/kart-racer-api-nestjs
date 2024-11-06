@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { RacerSocialsService } from './racer-socials.service';
-import { RacerSocialsController } from './racer-socials.controller';
-import { RacerChatGateway } from './racer-chat/racer-chat.gateway';
-import { RacerChatController } from './racer-chat/racer-chat.controller';
-import { RacerChatService } from './racer-chat/racer-chat.service';
+import { RacerChatGateway } from './gateways/racer-chat.gateway';
+import { RacerChatController } from './controllers/racer-chat.controller';
+import { RacerChatService } from './services/racer-chat.service';
+import { RacerSocialsController } from './controllers/racer-socials.controller';
+import { RacerSocialsService } from './services/racer-socials.service';
 
 @Module({
   controllers: [RacerSocialsController, RacerChatController],

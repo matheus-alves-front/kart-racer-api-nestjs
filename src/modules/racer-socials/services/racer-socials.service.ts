@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateRacerSocialDto } from './dto/create-racer-social.dto';
-import { UpdateRacerSocialDto } from './dto/update-racer-social.dto';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 
 @Injectable()
 export class RacerSocialsService {
