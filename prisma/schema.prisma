@@ -188,6 +188,7 @@ model TrackRecord {
 
 model TrackBestLap {
   id                String       @id @default(auto()) @map("_id") @db.ObjectId
+  racerLapRanking   Int
   trackMode         String
 
   trackId           String       @db.ObjectId
